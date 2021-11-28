@@ -1,0 +1,32 @@
+[General]
+loglevel = notify
+bypass-system = 1
+skip-proxy = 127.0.0.1, 192.168.0.0/16, 192.1.0.0/24, 192.1.1.0/24, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, localhost, *.local, e.crashlytics.com
+replica = 0
+ipv6 = false
+dns-server = <%= config['nameservers'].join(', ') %>
+bypass-tun = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 192.1.0.0/24, 192.1.1.0/24
+interface = 0.0.0.0
+port = 8888
+socks-port = 8889
+socks-interface = 0.0.0.0
+
+[Proxy]
+Direct = direct
+<%= groups_proxies.values.map{|proxies| proxies.map{|k, v| "#{k} = #{v}"}}.flatten.join("\n") %>
+
+[Proxy Group]
+Proxy = select,Direct,<%= groups_proxies.keys.join(',') %>
+<% rules_groups.each do |rule_proxy| %>
+<%= rule_proxy %> = select,Direct,Proxy
+<% end %>
+<% groups_proxies.each do |group_id, proxies| %>
+<%= group_id %> = select, <%= group_id %>: Auto,<%= proxies.keys.join(',') %>
+<% end %>
+<% groups_proxies.each do |group_id, proxies| %>
+<%= group_id %>: Auto = url-test,<%= proxies.keys.join(',') %>,url = http://www.gstatic.com/generate_204
+<% end %>
+
+[Rule]
+<%= rules.map{|r| r.join(',')}.join("\n") %>
+FINAL,@Global

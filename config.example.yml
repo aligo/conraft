@@ -1,0 +1,129 @@
+---
+# dns
+nameservers:
+  - 119.29.29.29
+  - 8.8.8.8
+  - 8.8.4.4
+rules:
+  # Add/remove rules groups according to needs
+  # Group Proxy and DIRECT are required
+  # Each group can set `force_remote_dns` `auto_proxy_list` `DOMAIN-KEYWORD` `DOMAIN-SUFFIX` `IP-CIDR` `GEOIP` ..., as below
+  - group: Proxy
+    force_remote_dns: true
+    auto_proxy_list:
+      # gfwlist: https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
+      tinygfw: https://raw.githubusercontent.com/gfwlist/tinylist/master/tinylist.txt
+    DOMAIN-KEYWORD:
+      list:
+        - google
+        - facebook
+        - gmail
+        - instagram
+        - twitter
+        - youtube
+        - telegram
+        - github
+        - bitbucket
+        - oculus
+    DOMAIN-SUFFIX:
+      list:
+        - ntp.org
+        - meta.com
+  - group: '@Apple'
+    DOMAIN-SUFFIX:
+      list:
+        - apple.co
+        - icloud.com
+        - itunes.com
+        - apple.com
+        - icloud-content.com
+        - cdn-apple.com
+        - me.com
+        - mzstatic.com
+  - group: '@Game'
+    DOMAIN-SUFFIX:
+      list:
+        - xboxlive.com
+        - mp.microsoft.com
+        - nintendo.com
+        - nintendo.net
+        - direwolfdigital.com
+        - pokemon.com
+  - group: '@Steam'
+    DOMAIN-SUFFIX:
+      list:
+        - steamcommunity.com
+        - steampowered.com
+        - steamstatic.com
+  - group: '@Media'
+    DOMAIN-SUFFIX:
+      list:
+        - tidal.com
+        - tidalhifi.com
+        - roonlabs.net
+        - roonlabs.com
+        - qobuz.com
+        - ropieee.org
+        - formula1.com
+  - group: DIRECT
+    DOMAIN-SUFFIX:
+      list:
+        - local
+        - safebrowsing.googleapis.com
+    IP-CIDR:
+      list:
+        - 127.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 10.0.0.0/8
+        - 17.0.0.0/8
+        - 100.64.0.0/10
+        - 192.1.1.0/24
+        - 192.1.0.0/24
+  - group: '@CN'
+    GEOIP:
+      list:
+        - CN
+servers:
+  # Each server group can set `surge_url` `clash_url` at the same time, as below
+  # If `surge_url` is not specified, surge will use servers from `clash_url`
+  GROUP1:
+    # surge subscription url 
+    surge_url: http://xxx.com/xxx
+    # clash subscription url
+    clash_url: http://xxx.com/xxx
+    # custom servers
+    servers:
+      NAME1:
+        type: ss
+        server: x.x.x.x
+        port: xxxx
+        cipher: chacha20-ietf-poly1305
+        password: xxxx
+        udp: true
+        plugin: obfs
+        plugin-opts:
+          mode: http
+          host: world.taobao.com
+  GROUP2:
+    servers:
+      NAME2:
+        type: ss
+        server: x.x.x.x
+        port: xxxx
+        cipher: chacha20-ietf-poly1305
+        password: xxxx
+        udp: true
+        plugin: obfs
+        plugin-opts:
+          mode: http
+          host: world.taobao.com
+outputs:
+  # output config name => selected server groups
+  output1: ['GROUP2']
+  output2: ['GROUP1', 'GROUP2']
+
+after_cmds:
+  # run cmds after crafted
+  - cp ./outputs/GG.conf /surge_config_path
+  - cp ./outputs/GG.yaml /clash_config_path

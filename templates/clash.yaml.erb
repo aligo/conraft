@@ -1,0 +1,47 @@
+port: 7890
+socks-port: 7891
+redir-port: 7892
+allow-lan: true
+mode: Rule
+log-level: info
+external-controller: 0.0.0.0:9090
+external-ui: ui
+experimental:
+  ignore-resolve-fail: true
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:53
+  enhanced-mode: redir-host # or fake-ip
+  nameserver:<% config['nameservers'].each do |nameserver| %>
+    - <%= nameserver %><% end %>
+  fallback: # concurrent request with nameserver, fallback used when GEOIP country isn't CN
+    - tls://8.8.8.8:853
+    - tls://8.8.4.4:853
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  fallback-filter:
+    geoip: true # default
+    ipcidr: # ips in these subnets will be considered polluted
+      - 240.0.0.0/4
+
+proxies: <% groups_proxies.values.flatten.each do |proxy| %>
+  - <%= JSON.dump(proxy) %><% end %>
+
+<% groups = [{name: 'Proxy', type: 'select', proxies: ['DIRECT'] + groups_proxies.keys }] +
+  rules_groups.map do |rule_proxy|
+    {name: rule_proxy, type: 'select', proxies: ['DIRECT','Proxy']}
+  end + groups_proxies.map do |group_id, proxies|
+    {name: group_id, type: 'select', proxies: ["#{group_id}: Auto"] + proxies.map{|proxy| proxy['name']}}
+  end + groups_proxies.map do |group_id, proxies|
+    {name: "#{group_id}: Auto", type: 'url-test', url: 'http://www.gstatic.com/generate_204', interval: 300, proxies: proxies.map{|proxy| proxy['name']}}
+  end
+%>
+proxy-groups:<% groups.each do |group| %>
+  - <%= JSON.dump(group) %><% end %>
+
+rules:
+- IP-CIDR,127.0.0.0/8,DIRECT
+<% rules.each do |rule| %>
+- <%= rule[0..2].join(',') %><% end %>
+- MATCH,@Global
