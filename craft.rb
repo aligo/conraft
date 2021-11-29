@@ -58,6 +58,7 @@ end
 
 def get_surge_line(server_conf)
   surge_line = "#{server_conf['type']}, #{server_conf['server']}, #{server_conf['port']}, "
+  params = {}
   case server_conf['type']
   when 'ss'
     params = {
@@ -118,15 +119,6 @@ end
     @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
     @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
   end
-  if conf['surge_url']
-    if surge_conf = read_cache("#{conf_name}_surge"){ open(conf['surge_url']).read }
-      surge_data = parse_ini(surge_conf)
-      proxies = surge_data['Proxy']
-      proxies.delete :lines
-      proxies.select!{|k,v| v!= 'direct'}
-      @proxies_groups['surge'][conf_name].merge! proxies.map{|k,v| ["#{conf_name}: #{k}",v] }.to_h
-    end
-  end
   if conf['clash_url']
     if clash_conf = read_cache("#{conf_name}_clash"){ open(conf['clash_url']).read }
       clash_data = YAML.load clash_conf
@@ -136,6 +128,16 @@ end
         @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
         @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
       end
+    end
+  end
+  if conf['surge_url']
+    if surge_conf = read_cache("#{conf_name}_surge"){ open(conf['surge_url']).read }
+      @proxies_groups['surge'][conf_name] = {}
+      surge_data = parse_ini(surge_conf)
+      proxies = surge_data['Proxy']
+      proxies.delete :lines
+      proxies.select!{|k,v| v!= 'direct'}
+      @proxies_groups['surge'][conf_name].merge! proxies.map{|k,v| ["#{conf_name}: #{k}",v] }.to_h
     end
   end
 
