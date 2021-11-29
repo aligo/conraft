@@ -157,5 +157,5 @@ end
 end
 
 @config['after_cmds'].each do |cmd|
-  exec cmd
+  `#{cmd}`
 end
