@@ -111,44 +111,49 @@ end
 @proxies_groups = {'surge' => {}, 'clash' => {}}
 
 @config['servers'].each do |conf_name, conf|
-  @proxies_groups['surge'][conf_name] = {}
-  @proxies_groups['clash'][conf_name] = []
+  begin
+    @proxies_groups['surge'][conf_name] = {}
+    @proxies_groups['clash'][conf_name] = []
 
-  conf['servers']&.each do |name, server_conf|
-    server_name = "#{conf_name}: #{name}"
-    @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
-    @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
-  end
-  if conf['clash_url']
-    if clash_conf = read_cache("#{conf_name}_clash"){ open(conf['clash_url']).read }
-      clash_data = YAML.load clash_conf
-      proxies = clash_data['proxies'] || clash_data['Proxy']
-      proxies.each do |server_conf|
-        server_name = "#{conf_name}: #{server_conf['name'].strip}"
-        @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
-        @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
-      end
+    conf['servers']&.each do |name, server_conf|
+      server_name = "#{conf_name}: #{name}"
+      @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
+      @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
     end
-  end
-  if conf['surge_url']
-    if surge_conf = read_cache("#{conf_name}_surge"){ open(conf['surge_url']).read }
-      @proxies_groups['surge'][conf_name] = {}
-      surge_data = parse_ini(surge_conf)
-      proxies = surge_data['Proxy']
-      proxies.delete :lines
-      proxies.select!{|k,v| v!= 'direct'}
-      @proxies_groups['surge'][conf_name].merge! proxies.map{|k,v| ["#{conf_name}: #{k}",v] }.to_h
-    end
-  end
-
-  if conf['excludes']
-    conf['excludes'].each do |exclude|
-      @proxies_groups.each do |type, groups|
-        groups[conf_name].reject! do |item|
-          item.to_s.include?(exclude)
+    if conf['clash_url']
+      if clash_conf = read_cache("#{conf_name}_clash"){ open(conf['clash_url']).read }
+        clash_data = YAML.load clash_conf
+        proxies = clash_data['proxies'] || clash_data['Proxy']
+        proxies.each do |server_conf|
+          server_name = "#{conf_name}: #{server_conf['name'].strip}"
+          @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
+          @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
         end
       end
     end
+    if conf['surge_url']
+      if surge_conf = read_cache("#{conf_name}_surge"){ open(conf['surge_url']).read }
+        @proxies_groups['surge'][conf_name] = {}
+        surge_data = parse_ini(surge_conf)
+        proxies = surge_data['Proxy']
+        proxies.delete :lines
+        proxies.select!{|k,v| v!= 'direct'}
+        @proxies_groups['surge'][conf_name].merge! proxies.map{|k,v| ["#{conf_name}: #{k}",v] }.to_h
+      end
+    end
+
+    if conf['excludes']
+      conf['excludes'].each do |exclude|
+        @proxies_groups.each do |type, groups|
+          groups[conf_name].reject! do |item|
+            item.to_s.include?(exclude)
+          end
+        end
+      end
+    end
+  rescue => e
+    puts "Error on `#{conf_name}`"
+    raise e
   end
 end
 
