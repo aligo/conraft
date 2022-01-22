@@ -126,7 +126,7 @@ end
         proxies = clash_data['proxies'] || clash_data['Proxy']
         proxies.each do |server_conf|
           server_name = "#{conf_name}: #{server_conf['name'].strip}"
-          @proxies_groups['clash'][conf_name].push({'name' => server_name}.merge(server_conf))
+          @proxies_groups['clash'][conf_name].push(server_conf.merge('name' => server_name))
           @proxies_groups['surge'][conf_name][server_name] = get_surge_line(server_conf)
         end
       end
