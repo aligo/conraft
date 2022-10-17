@@ -68,6 +68,12 @@ def get_surge_line(server_conf)
       'obfs-host'      => server_conf.dig('plugin-opts', 'host'),
       'udp-relay'      => server_conf['udp-relay']&.presence&.to_s,
     }
+  when 'trojan'
+    params = {
+      'password'       => server_conf['password'],
+      'sni'            => server_conf['sni'],
+      'udp-relay'      => server_conf['udp-relay']&.presence&.to_s,
+    }
   end
   surge_line += params.select{|k, v| v&.length}.map{|k, v| "#{k}=#{v}"}.join(', ')
   surge_line
