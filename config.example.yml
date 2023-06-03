@@ -1,4 +1,7 @@
 ---
+proxy_slots:
+  - Proxy
+  - BackProxy
 # dns
 nameservers:
   - 119.29.29.29
@@ -8,7 +11,7 @@ rules:
   # Add/remove rules groups according to needs
   # Group Proxy and DIRECT are required
   # Each group can set `force_remote_dns` `auto_proxy_list` `DOMAIN-KEYWORD` `DOMAIN-SUFFIX` `IP-CIDR` `GEOIP` ..., as below
-  - group: Proxy
+  - group: '@Proxy'
     force_remote_dns: true
     auto_proxy_list:
       # gfwlist: https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
