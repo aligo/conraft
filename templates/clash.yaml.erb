@@ -28,9 +28,12 @@ dns:
 proxies: <% groups_proxies.values.flatten.each do |proxy| %>
   - <%= JSON.dump(proxy) %><% end %>
 
-<% groups = [{name: 'Proxy', type: 'select', proxies: ['DIRECT'] + groups_proxies.keys }] +
+<% groups =
+  config['proxy_slots'].map do |slot|
+    {name: slot, type: 'select', proxies: ['DIRECT'] + groups_proxies.keys }
+  end +
   rules_groups.map do |rule_proxy|
-    {name: rule_proxy, type: 'select', proxies: ['DIRECT','Proxy']}
+    {name: rule_proxy, type: 'select', proxies: ['DIRECT'] + config['proxy_slots']}
   end + groups_proxies.map do |group_id, proxies|
     {name: group_id, type: 'select', proxies: ["#{group_id}: Auto"] + proxies.map{|proxy| proxy['name']}}
   end + groups_proxies.map do |group_id, proxies|

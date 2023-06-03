@@ -74,6 +74,13 @@ def get_surge_line(server_conf)
       'sni'            => server_conf['sni'],
       'udp-relay'      => server_conf['udp-relay']&.presence&.to_s,
     }
+  when 'vmess'
+    params = {
+      'username'        => server_conf['uuid'],
+      'alterId'         => server_conf['alterId'].to_s,
+      'cipher'          => server_conf['cipher'],
+      'udp'             => server_conf['udp'].to_s,
+    }
   end
   surge_line += params.select{|k, v| v&.length}.map{|k, v| "#{k}=#{v}"}.join(', ')
   surge_line

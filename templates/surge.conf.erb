@@ -16,9 +16,11 @@ Direct = direct
 <%= groups_proxies.values.map{|proxies| proxies.map{|k, v| "#{k} = #{v}"}}.flatten.join("\n") %>
 
 [Proxy Group]
-Proxy = select,Direct,<%= groups_proxies.keys.join(',') %>
+<% config['proxy_slots'].each do |slot| %>
+<%= slot %> = select,Direct,<%= groups_proxies.keys.join(',') %>
+<% end %>
 <% rules_groups.each do |rule_proxy| %>
-<%= rule_proxy %> = select,Direct,Proxy
+<%= rule_proxy %> = select,Direct,<%= config['proxy_slots'].join(',') %>
 <% end %>
 <% groups_proxies.each do |group_id, proxies| %>
 <%= group_id %> = select, <%= group_id %>: Auto,<%= proxies.keys.join(',') %>
