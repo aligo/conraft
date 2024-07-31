@@ -12,7 +12,8 @@ dns:
   enable: true
   ipv6: false
   listen: 0.0.0.0:53
-  enhanced-mode: redir-host # or fake-ip
+  # enhanced-mode: redir-host # or fake-ip
+  enhanced-mode: fake-ip
   nameserver:<% config['nameservers'].each do |nameserver| %>
     - <%= nameserver %><% end %>
   fallback: # concurrent request with nameserver, fallback used when GEOIP country isn't CN
