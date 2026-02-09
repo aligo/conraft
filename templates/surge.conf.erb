@@ -1,15 +1,10 @@
 [General]
 loglevel = notify
-bypass-system = 1
 skip-proxy = 127.0.0.1, 192.168.0.0/16, 192.1.0.0/24, 192.1.1.0/24, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, localhost, *.local, e.crashlytics.com
-replica = 0
 ipv6 = false
 dns-server = <%= config['nameservers'].join(', ') %>
-bypass-tun = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 192.1.0.0/24, 192.1.1.0/24
-interface = 0.0.0.0
-port = 8888
-socks-port = 8889
-socks-interface = 0.0.0.0
+http-listen = 0.0.0.0:8888
+socks5-listen = 0.0.0.0:8889
 
 [Proxy]
 Direct = direct

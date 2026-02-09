@@ -125,6 +125,12 @@ outputs:
   # output config name => selected server groups
   output1: ['GROUP2']
   output2: ['GROUP1', 'GROUP2']
+  # exclude specific rule groups from the output
+  output3:
+    servers: ['GROUP1', 'GROUP2']
+    exclude_rules:
+      - '@Steam'
+      - '@Media'
 
 after_cmds:
   # run cmds after crafted
