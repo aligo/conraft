@@ -88,13 +88,15 @@ rules:
       list:
         - CN
 servers:
-  # Each server group can set `surge_url` `clash_url` at the same time, as below
-  # If `surge_url` is not specified, surge will use servers from `clash_url`
+  # Each server group can set `surge_url` `clash_url` or local `surge_path` `clash_path`, as below
+  # If `surge_url`/`surge_path` is not specified, surge will use servers from clash source
   GROUP1:
-    # surge subscription url 
+    # subscription url
     surge_url: http://xxx.com/xxx
-    # clash subscription url
     clash_url: http://xxx.com/xxx
+    # or local file path (relative to craft.rb)
+    # surge_path: subs/example.conf
+    # clash_path: subs/example.yaml
     # custom servers
     servers:
       NAME1:
